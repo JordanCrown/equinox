@@ -1,0 +1,29 @@
+{
+  "name": "equinox",
+  "version": "1.0.0",
+  "homepage": "https://github.com/JordanCrown/equinox",
+  "authors": [
+    "Cameron Rahman <cameron.rahman@gmail.com>"
+  ],
+  "description": "A simple, fully responsive jQuery calendar plugin.",
+  "main": "dist/equinox.min.js",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "calendar",
+    "jquery"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "jquery": "2.1.*",
+    "moment": "2.6.*"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
