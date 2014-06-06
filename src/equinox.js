@@ -1,4 +1,4 @@
-/**
+/*
  * jQuery Equinox v1.0.0
  * Copyright 2014 Jordan Crown
  * Contributing Author: Cameron Rahman
@@ -10,13 +10,14 @@
 
 	var defaultSettings = {
 		events: [],
+		detailedViewBreakpoint: 550,
 		// queryUrl: null,
 		onEventClick: null,
 		onPreviousMonthStart: null,
 		onNextMonthStart: null,
 		onCurrentMonthStart: null,
-		onRefreshStart: null,
-		onRefreshEnd: null
+		onLoadStart: null,
+		onLoadEnd: null
 	};
 
 	var defaultEventSettings = {
@@ -81,6 +82,11 @@
 
 					// output initial calendar view
 					$this.equinox('refresh');
+					$this.equinox('load');
+
+					$(window).resize(function() {
+						$this.equinox('refresh');
+					});
 
 					$this.on('click', '.calendar-actions button.prev', function(e) {
 						var data = $this.data('equinox');
@@ -88,7 +94,7 @@
 						if(typeof(data.settings.onPreviousMonthStart) === typeof(Function)) {
 							data.settings.onPreviousMonthStart(e, data);
 						}
-						$this.equinox('refresh');
+						$this.equinox('load');
 					});
 
 					$this.on('click', '.calendar-actions button.next', function(e) {
@@ -97,7 +103,7 @@
 						if(typeof(data.settings.onNextMonthStart) === typeof(Function)) {
 							data.settings.onNextMonthStart(e, data);
 						}
-						$this.equinox('refresh');
+						$this.equinox('load');
 					});
 
 					$this.on('click', '.calendar-actions button.today', function(e) {
@@ -108,7 +114,7 @@
 						}
 						if(data.activeMonth.startOf('month').diff(currentMonth) !== 0) {
 							data.activeMonth = currentMonth;
-							$this.equinox('refresh');
+							$this.equinox('load');
 						}
 					});
 
@@ -130,23 +136,36 @@
 				}
 			});
 		},
-		refresh: function() {
+		load: function() {
 			return this.each(function() {
 				var $this = $(this);
 				var data = $this.data('equinox');
 
-				if(typeof(data.settings.onRefreshStart) === typeof(Function)) {
-					data.settings.onRefreshStart(data);
+				if(typeof(data.settings.onLoadStart) === typeof(Function)) {
+					data.settings.onLoadStart(data);
 				}
 				
 				var activeMonth = data.activeMonth;
 				var calendar = getMonthHtml(activeMonth, data.segmentedEvents);
 
-				if(typeof(data.settings.onRefreshEnd) === typeof(Function)) {
-					data.settings.onRefreshEnd(data);
+				if(typeof(data.settings.onLoadEnd) === typeof(Function)) {
+					data.settings.onLoadEnd(data);
 				}
 
 				$this.html(calendar);
+
+			});
+		},
+		refresh: function() {
+			return this.each(function() {
+				var $this = $(this);
+				var data = $this.data('equinox');
+
+				if($this.width() < data.settings.detailedViewBreakpoint) {
+					$this.removeClass('detailed');
+				} else {
+					$this.addClass('detailed');
+				}
 
 			});
 		}
@@ -180,7 +199,9 @@
 
 		var weekHeader = $('<div class="week week-header"><div class="days-container"></div></div>');
 		for(var i = 0; i < 7; i++) {
-			$('.days-container', weekHeader).append('<div class="day ' + moment().day(i).format('dddd').toLowerCase() + '">' + moment().day(i).format('dddd') + '</div>');
+			var simpleLabel = '<span class="simple-label">' + moment().day(i).format('dd').substr(0, 1) + '</span>';
+			var detailedLabel = '<span class="detailed-label">' + moment().day(i).format('dddd') + '</span>';
+			$('.days-container', weekHeader).append('<div class="day ' + moment().day(i).format('dddd').toLowerCase() + '">' + simpleLabel + detailedLabel + '</div>');
 		}
 		weeks.append(weekHeader);
 
@@ -315,7 +336,10 @@
 		}
 
 		var dateHtml = $('<div class="' + dateClasses.join(' ') + '"></div>');
-		dateHtml.append('<div class="date-label">' + (date.date() === 1 ? date.format('MMM ') : '') + date.date() + '</div>');
+		dateHtml.append('<div class="date-label">' + date.date() + '</div>');
+		if(date.date() === 1 || (date.month() !== activeMonth.month() && date.day() === 0)) {
+			$('.date-label', dateHtml).prepend('<span class="date-month-label">' + date.format('MMM') + '</span> ');
+		}
 		dateHtml.append('<ul class="date-events"></ul>');
 
 		var slot = 0;
