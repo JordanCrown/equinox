@@ -1,0 +1,226 @@
+/**
+ * jQuery Equinox v1.0.0
+ * Copyright 2014 Jordan Crown
+ * Contributing Author: Cameron Rahman
+ */
+
+@calendar-header-bg-color: #0aa8e3;
+@calendar-border-color: #efefef;
+
+@event-height: 28px;
+@event-default-tab-color: #ffaa3c;
+
+.clearfix() {
+	&:before,
+	&:after {
+		content: " ";
+		display: table;
+	}
+	&:after {
+		clear: both;
+	}
+}
+
+.box-sizing(@box-model) {
+	-webkit-box-sizing: @box-model;
+	-moz-box-sizing: @box-model;
+	box-sizing: @box-model;
+}
+
+
+.equinox {
+
+	.calendar {
+
+	}
+
+	.calendar-header {
+		background-color: @calendar-header-bg-color;
+		color: #fff;
+		padding: 8px 11px;
+		border-top-left-radius: 4px;
+		border-top-right-radius: 4px;
+		.clearfix();
+	}
+
+	.calendar-actions {
+		float: left;
+	}
+
+	.month-label {
+		text-align: right;
+		font-size: 24px;
+		float: right;
+	}
+
+	.month-weeks {
+		border: 1px solid @calendar-border-color;
+		border-top: none;
+		background-color: tint(@calendar-border-color, 70%);
+		border-bottom-left-radius: 4px;
+		border-bottom-right-radius: 4px;
+	}
+
+	.week {
+		margin-left: -1px;
+		position: relative;
+		&:first-child {
+			.day {
+				border-top: none;
+			}
+		}
+	}
+	.week-events {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		padding-top: 9px + 17px;
+		.slot {
+			margin: 0;
+			> ul {
+				list-style: none;
+				margin: 0;
+				padding: 0;
+				display: table;
+				table-layout: fixed;
+				width: 100%;
+				> li {
+					.box-sizing(border-box);
+					display: table-cell;
+					margin: 0;
+					padding-left: 9px;
+					padding-right: 8px;
+					width: percentage(1 / 7);
+					&.span-1 { width: percentage(1 / 7); }
+					&.span-2 { width: percentage(2 / 7); }
+					&.span-3 { width: percentage(3 / 7); }
+					&.span-4 { width: percentage(4 / 7); }
+					&.span-5 { width: percentage(5 / 7); }
+					&.span-6 { width: percentage(6 / 7); }
+					&.span-7 { width: percentage(7 / 7); }
+				}
+			}
+		}
+		.event {
+			.start-time {
+				display: none;
+			}
+			.title {
+				white-space: nowrap;
+			}
+		}
+	}
+	.days-container {
+		display: table;
+		table-layout: fixed;
+		width: 100%;
+		.day {
+			.box-sizing(border-box);
+			display: table-cell;
+			width: percentage(1 / 7);
+			padding: 8px;
+			border-left: 1px solid @calendar-border-color;
+			border-top: 1px solid @calendar-border-color;
+		}
+	}
+
+	.week-header {
+		font-size: 10px;
+		text-transform: uppercase;
+		color: #aaa;
+		.day {
+			text-align: center;
+			background-color: #fff;
+			text-overflow: ellipsis;
+			overflow: hidden;
+		}
+	}
+
+	.date {
+		&.outside-month {
+			.date-label {
+				color: shade(@calendar-border-color, 10%);
+			}
+		}
+		&.current-date {
+			background-color: tint(@calendar-header-bg-color, 90%);
+			position: relative;
+			&:before {
+				content: '';
+				position: absolute;
+				display: block;
+				left: -1px;
+				top: -1px;
+				right: -1px;
+				bottom: -1px;
+				border: 1px solid tint(@calendar-header-bg-color, 80%);
+				z-index: 1;
+			}
+			.date-label {
+				color: @calendar-header-bg-color;
+			}
+		}
+	}
+	.date-label {
+		text-align: right;
+		font-size: 12px;
+		color: #888;
+	}
+	.date-events {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		min-height: (@event-height + 6px) * 2;
+	}
+
+	.event-container {
+		.box-sizing(border-box);
+		min-height: @event-height + 6px;
+		padding-top: 6px;
+		margin: 0;
+		&.continuation .event {
+			margin-left: -8px;
+			border-top-left-radius: 0;
+			border-bottom-left-radius: 0;
+			border-left: none;
+			padding-left: 6px + 8px + 3px;
+		}
+		&.continued .event {
+			margin-right: -8px;
+			border-top-right-radius: 0;
+			border-bottom-right-radius: 0;
+			padding-right: 6px + 8px;
+		}
+	}
+	.event {
+		display: block;
+		.box-sizing(border-box);
+		min-height: @event-height;
+		background-color: #fff;
+		padding: ((@event-height - 14px) / 2) 6px;
+		font-size: 12px;
+		line-height: 14px;
+		border-radius: 3px;
+		box-shadow: 0 1px 1px fade(@calendar-border-color, 80%);
+		border-left: 3px solid @event-default-tab-color;
+		color: #666;
+		position: relative;
+		z-index: 4;
+		.start-time {
+			display: none;
+			float: right;
+			color: #bbb;
+			margin-left: 4px;
+		}
+		.title {
+			display: block;
+			overflow-x: hidden;
+			text-overflow: ellipsis;
+		}
+	}
+
+}
