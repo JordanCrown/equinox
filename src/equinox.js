@@ -11,12 +11,13 @@
 	var defaultSettings = {
 		events: [],
 		// queryUrl: null,
+		detailedWidthBreakpoint: 550,
 		onEventClick: null,
 		onPreviousMonthStart: null,
 		onNextMonthStart: null,
 		onCurrentMonthStart: null,
-		onRefreshStart: null,
-		onRefreshEnd: null
+		onLoadStart: null,
+		onLoadEnd: null
 	};
 
 	var defaultEventSettings = {
@@ -81,6 +82,11 @@
 
 					// output initial calendar view
 					$this.equinox('refresh');
+					$this.equinox('load');
+
+					$(window).resize(function() {
+						$this.equinox('refresh');
+					});
 
 					$this.on('click', '.calendar-actions button.prev', function(e) {
 						var data = $this.data('equinox');
@@ -88,7 +94,7 @@
 						if(typeof(data.settings.onPreviousMonthStart) === typeof(Function)) {
 							data.settings.onPreviousMonthStart(e, data);
 						}
-						$this.equinox('refresh');
+						$this.equinox('load');
 					});
 
 					$this.on('click', '.calendar-actions button.next', function(e) {
@@ -97,7 +103,7 @@
 						if(typeof(data.settings.onNextMonthStart) === typeof(Function)) {
 							data.settings.onNextMonthStart(e, data);
 						}
-						$this.equinox('refresh');
+						$this.equinox('load');
 					});
 
 					$this.on('click', '.calendar-actions button.today', function(e) {
@@ -108,7 +114,7 @@
 						}
 						if(data.activeMonth.startOf('month').diff(currentMonth) !== 0) {
 							data.activeMonth = currentMonth;
-							$this.equinox('refresh');
+							$this.equinox('load');
 						}
 					});
 
@@ -130,23 +136,36 @@
 				}
 			});
 		},
-		refresh: function() {
+		load: function() {
 			return this.each(function() {
 				var $this = $(this);
 				var data = $this.data('equinox');
 
-				if(typeof(data.settings.onRefreshStart) === typeof(Function)) {
-					data.settings.onRefreshStart(data);
+				if(typeof(data.settings.onLoadStart) === typeof(Function)) {
+					data.settings.onLoadStart(data);
 				}
 				
 				var activeMonth = data.activeMonth;
 				var calendar = getMonthHtml(activeMonth, data.segmentedEvents);
 
-				if(typeof(data.settings.onRefreshEnd) === typeof(Function)) {
-					data.settings.onRefreshEnd(data);
+				if(typeof(data.settings.onLoadEnd) === typeof(Function)) {
+					data.settings.onLoadEnd(data);
 				}
 
 				$this.html(calendar);
+
+			});
+		},
+		refresh: function() {
+			return this.each(function() {
+				var $this = $(this);
+				var data = $this.data('equinox');
+
+				if($this.width() < data.settings.detailedWidthBreakpoint) {
+					$this.removeClass('detailed');
+				} else {
+					$this.addClass('detailed');
+				}
 
 			});
 		}
@@ -312,6 +331,9 @@
 		}
 		if(moment(date).startOf('day').valueOf() === moment(currentDate).startOf('day').valueOf()) {
 			dateClasses.push('current-date');
+		}
+		if(events.length || reservedSlots.length) {
+			dateClasses.push('has-events');
 		}
 
 		var dateHtml = $('<div class="' + dateClasses.join(' ') + '"></div>');
