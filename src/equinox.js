@@ -347,7 +347,7 @@
 				$('.date-events', dateHtml).append('<li class="event-container placeholder"></li>');
 				reservedSlot = reservedSlots.shift();
 				i--;
-			} else if(events[i].daySpan > 2) {
+			} else if(events[i].daySpan >= 2) {
 				continue;
 			} else {
 				var eventContainer = $('<li class="event-container"></li>');
