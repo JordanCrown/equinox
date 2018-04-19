@@ -26,6 +26,7 @@
 		title: '',
 		url: '',
 		class: '',
+		color: '',
 		data: {}
 	};
 
@@ -309,7 +310,7 @@
 			}
 
 			weeks.append(week);
-			date.add('days', 1); // increment to next week
+			date.add(1, 'days'); // increment to next week
 		}
 
 		monthHtml.append(weeks);
@@ -363,7 +364,7 @@
 
 	var getEventHtml = function(event) {
 
-		var eventHtml = $('<a class="event ' + event.class + '" href="' + event.url + '"></a>');
+		var eventHtml = $('<a class="event ' + event.class + '" href="' + event.url + '" ' + (event.color != '' ? 'style="border-color: ' + event.color + ';"' : '') + '></a>');
 		eventHtml.data('event-id', event.id);
 		eventHtml.append('<span class="start-time">' + event.start.format(event.start.minutes() === 0 ? 'ha' : 'h:mma') + '</span>');
 		eventHtml.append('<span class="title">' + event.title + '</span>');
