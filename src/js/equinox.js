@@ -17,7 +17,8 @@
 		onNextMonthStart: null,
 		onCurrentMonthStart: null,
 		onLoadStart: null,
-		onLoadEnd: null
+		onLoadEnd: null,
+		weekStartAtMonday: false
 	};
 
 	var defaultEventSettings = {
@@ -145,9 +146,9 @@
 				if(typeof(data.settings.onLoadStart) === typeof(Function)) {
 					data.settings.onLoadStart(data);
 				}
-				
+
 				var activeMonth = data.activeMonth;
-				var calendar = getMonthHtml(activeMonth, data.segmentedEvents);
+				var calendar = getMonthHtml(activeMonth, data.segmentedEvents, data.settings.weekStartAtMonday);
 
 				if(typeof(data.settings.onLoadEnd) === typeof(Function)) {
 					data.settings.onLoadEnd(data);
@@ -184,8 +185,9 @@
 
 
 
-	var getMonthHtml = function(month, events) {
-
+	var getMonthHtml = function(month, events, weekStartAtMonday) {
+		var loopStart = weekStartAtMonday ? 1 : 0;
+		var loopStop = weekStartAtMonday ? 8 : 7;
 		var monthHtml = $('<div class="calendar"></div>');
 		
 		var header = $('<div class="calendar-header"></div>');
@@ -199,7 +201,7 @@
 		var weeks = $('<div class="month-weeks"></div>');
 
 		var weekHeader = $('<div class="week week-header"><div class="days-container"></div></div>');
-		for(var i = 0; i < 7; i++) {
+		for(var i = loopStart; i < loopStop; i++) {
 			$('.days-container', weekHeader).append('<div class="day ' + moment().day(i).format('dddd').toLowerCase() + '">' + moment().day(i).format('dddd') + '</div>');
 		}
 		weeks.append(weekHeader);
@@ -227,7 +229,7 @@
 
 			var weekEventSlots = [[]];
 			var weekDate = moment(date);
-			for(var j = 0; j < 7; j++) {
+			for(var j = loopStart; j < loopStop; j++) {
 				weekDate.day(j);
 
 				// add leftovers from previous week
@@ -265,7 +267,7 @@
 			week.append('<ul class="week-events"></ul>');
 			for(var j = 0; j < weekEventSlots.length; j++) {
 				var slot = $('<li class="slot"><ul></ul></li>');
-				for(var k = 0; k < 7; k++) {
+				for(var k = loopStart; k < loopStop; k++) {
 					if(weekEventSlots[j][k] === 'reserved') {
 						continue;
 					} else if(!weekEventSlots[j][k]) {
@@ -289,7 +291,7 @@
 
 
 			week.append('<div class="days-container"></div>');
-			for(var j = 0; j < 7; j++) {
+			for(var j = loopStart; j < loopStop; j++) {
 				date.day(j);
 
 				var reservedSlots = [];
