@@ -41,11 +41,11 @@ gulp.task('js', function() {
 // watch tasks
 
 gulp.task('watch', function() {
-	gulp.watch(srcPath + 'css/scss/**/*.scss', ['css']);
-	gulp.watch(srcPath + 'js/**/*.js', ['js']);
+	gulp.watch(srcPath + 'css/scss/**/*.scss', gulp.series('css'));
+	gulp.watch(srcPath + 'js/**/*.js', gulp.series('js'));
 });
 
 
 // default task
 
-gulp.task('default', ['watch']);
+gulp.task('default', gulp.series('watch'));
